@@ -1,11 +1,12 @@
 ﻿/////////////////////////////////////////////////////////////////////
 //                                                                 //
-// SealLib vDev                                                    //
-// Saturday, 26th August 2023                                      //
+// SealLib v1.0.0                                                  //
+// Saturday, 8th September 2023                                    //
 // Created by Seeloewen                                            //
 //                                                                 //
 // Simple library that contains some code that is used by my apps. //
 // You are free to use this library in your apps if you desire.    //
+// Make sure to acknowledge the license at the bottom of the file. //
 //                                                                 //
 // Find the library on GitHub:                                     //
 // https://github.com/Seeloewen/SeeloewenLib                       //
@@ -16,7 +17,6 @@ using System.Windows;
 using System.Collections.Generic;
 using System.Windows.Controls;
 using System;
-using Random_Item_Giver_Updater;
 using System.Windows.Media.Animation;
 using System.Windows.Forms.VisualStyles;
 using System.Text;
@@ -310,3 +310,23 @@ namespace SeeloewenLib
         }
     }
 }
+
+////////////////////////////////////////////////////////////////////////////
+//                                                                        //
+// SeeloewenLib - A simple yet powerful C# library                        //
+// Copyright(C) 2023 Louis/Seeloewen                                      //
+//                                                                        //
+// This program is free software: you can redistribute it and/or modify   //
+// it under the terms of the GNU General Public License as published by   //
+// the Free Software Foundation, either version 3 of the License, or      //
+// (at your option) any later version.                                    //
+//                                                                        //
+// This program is distributed in the hope that it will be useful,        //
+// but WITHOUT ANY WARRANTY; without even the implied warranty of         //
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          //
+// GNU General Public License for more details.                           //
+//                                                                        //
+// You should have received a copy of the GNU General Public License      //
+// along with this program.  If not, see <https://www.gnu.org/licenses/>. //
+//                                                                        //
+////////////////////////////////////////////////////////////////////////////
