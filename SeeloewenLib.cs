@@ -1,11 +1,11 @@
 ﻿/////////////////////////////////////////////////////////////////////
 //                                                                 //
-// SealLib v1.0.0                                                  //
-// Saturday, 8th September 2023                                    //
+// SealLib v1.1.0                                                  //
+// Wednesday, 27th March 2024                                      //
 // Created by Seeloewen                                            //
 //                                                                 //
 // Simple library that contains some code that is used by my apps. //
-// You are free to use this library in your apps if you desire.    //
+// You are free to use this library in your apps if you wish.      //
 // Make sure to acknowledge the license at the bottom of the file. //
 //                                                                 //
 // Find the library on GitHub:                                     //
@@ -100,27 +100,178 @@ namespace SeeloewenLib
         }
     }
 
-    public class SaveSystem //Currently in alpha, not very reliable. Only for test purposes.
+    public class SaveSystem
     {
-        public string path; //The path where the settings file is saved
+        public string path;
+        public string saveFileHeader;
+        public string saveFileName;
+        public List<SaveEntry> saveEntries = new List<SaveEntry>();
 
-        public SaveSystem(string path)
+        public SaveSystem(string path, string saveFileHeader, string saveFileName)
         {
             //Set the path where the settings file will be saved
             this.path = path;
+            this.saveFileHeader = saveFileHeader;
+            this.saveFileName = saveFileName;
         }
 
-        public void Save(List<string> saveEntries)
+        public void Save()
         {
+            List<string> file = new List<string>();
+
+            //Save file header
+            file.Add(saveFileHeader);
+
             //Save the settings to the file
-            File.WriteAllLines(string.Format("{0}/settings.txt", path), saveEntries);
+            foreach (SaveEntry saveEntry in saveEntries)
+            {
+                if (saveEntry.isCategory == true)
+                {
+                    file.Add(string.Format("\n#{0}", saveEntry.name));
+                }
+                else
+                {
+                    file.Add(string.Format("{0}={1}", saveEntry.name, saveEntry.content));
+                }
+            }
+            File.WriteAllLines(string.Format("{0}/{1}", path, $"{saveFileName}.txt"), file);
         }
 
-        public List<string> Load()
+        public void Load()
         {
-            //Read the settings from the file and return it as a list
-            IEnumerable<string> output = File.ReadLines(string.Format("{0}/settings.txt", path));
-            return output.ToList();
+            //Read the settings from the file
+            IEnumerable<string> output = File.ReadLines($"{path}/{saveFileName}.txt");
+            IEnumerable<string> oldFile;
+            bool oldFileSaveNeeded = false;
+
+            foreach (string entry in output)
+            {
+                string[] entrySplit = entry.Split('=');
+
+                //Check if the entry is not empty and not the header
+                if (entry != saveFileHeader && !string.IsNullOrEmpty(entry))
+                {
+                    foreach (SaveEntry saveEntry in saveEntries)
+                    {
+                        //Match the loaded entry to an existing entry
+                        if (saveEntry.name == entrySplit[0] && !saveEntry.isCategory)
+                        {
+                            //Check for corruption. If there is none, load the entry from the file
+                            if(!IsCorrupted(saveEntry, entrySplit[1]))
+                            {
+                                saveEntry.content = entrySplit[1];
+                            }
+                            else
+                            {
+                                //If there is corruption, ask the user if they want to correct it
+                                MessageBoxResult dialogResult = MessageBox.Show($"The save entry you are trying to load is corrupted and will most likely not work ({saveEntry.name} with content {entrySplit[1]}). Do you want to try to correct it?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                                if (dialogResult == MessageBoxResult.Yes)
+                                {
+                                    oldFile = output;
+                                    oldFileSaveNeeded = true;
+                                    saveEntry.content = saveEntry.possibleValues[0];
+                                    MessageBox.Show($"The save entry {saveEntry.name} was corrected to {entrySplit[0]}.", "Corrected", MessageBoxButton.OK, MessageBoxImage.Information);
+                                }
+                                else if (dialogResult == MessageBoxResult.No)
+                                {
+                                    saveEntry.content = entrySplit[1];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            //Save the old file and new file if a conversion because of corruption happended
+            if(oldFileSaveNeeded == true)
+            {
+                File.WriteAllLines(string.Format("{0}/{1}", path, $"{saveFileName}-{DateTime.Now.ToFileTime()}.old"), output);
+                Save();
+            }
+        }
+
+        public bool IsCorrupted(SaveEntry EntryTemplate, string entry)
+        {
+            //Check if the entry even needs to be checked or can be anything
+            if (EntryTemplate.hasDefinedValues == true)
+            {
+                //Check if the entry is one of the possible values
+                foreach (string possibleValue in EntryTemplate.possibleValues)
+                {
+                    if (possibleValue == entry)
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public void SetEntry(string name, string content)
+        {
+            //Sets the given entry to the given content
+            foreach (SaveEntry entry in saveEntries)
+            {
+                if (entry.name == name)
+                {
+                    if (entry.isCategory == false)
+                    {
+                        entry.content = content;
+                    }
+                    else
+                    {
+                        MessageBox.Show("SeeloewenLib Error: You're trying to set the content of a category, which is not possible.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
+        }
+
+        public string GetEntry(string name)
+        {
+            //Gets the content of the given entry
+            foreach (SaveEntry entry in saveEntries)
+            {
+                if (entry.name == name)
+                {
+                    if (entry.isCategory == false)
+                    {
+                        return entry.content;
+                    }
+                    else
+                    {
+                        MessageBox.Show("SeeloewenLib Error: You're trying to get the content of a category, which is not possible.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return "";
+                    }
+                }
+            }
+
+            return "";
+        }
+    }
+
+    public class SaveEntry
+    {
+        public string name;
+        public string content;
+        public bool isCategory;
+        public bool hasDefinedValues; //If this is false, a corruption check will be skipped
+        public string[] possibleValues;
+        private int index;
+
+        public SaveEntry(string name, string defaultContent, bool isCategory, bool hasDefinedValues, string[] possibleValues, int index)
+        {
+            //Map all variables
+            this.name = name;
+            this.content = defaultContent;
+            this.isCategory = isCategory;
+            this.hasDefinedValues = hasDefinedValues;
+            this.possibleValues = possibleValues;
+            this.index = index;
         }
     }
 
@@ -314,7 +465,7 @@ namespace SeeloewenLib
 ////////////////////////////////////////////////////////////////////////////
 //                                                                        //
 // SeeloewenLib - A simple yet powerful C# library                        //
-// Copyright(C) 2023 Louis/Seeloewen                                      //
+// Copyright(C) 2024 Louis/Seeloewen                                      //
 //                                                                        //
 // This program is free software: you can redistribute it and/or modify   //
 // it under the terms of the GNU General Public License as published by   //
