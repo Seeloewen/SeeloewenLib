@@ -1,6 +1,6 @@
 # SeeloewenLib
 SeeloewenLib is a simple C# library with useful code mainly used in software by Seeloewen.
-You're free to use this library in your own code if it's useful for you. Make sure to acknowledge the license the library lies under, which can be found here: https://www.gnu.org/licenses/gpl-3.0.en.html
+You're free to use this library in your own code if it's useful for you. Make sure to acknowledge the license the library lies under, which can be found here: https://www.gnu.org/licenses/gpl-3.0.en.html.
 Please note that most of this code only works in WPF.
 
 ## Content
