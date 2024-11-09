@@ -22,67 +22,68 @@ using System.IO;
 
 namespace SeeloewenLib;
 
-public class SeeloewenLibTools
+public static class Tools
 {
-    public string ConvertListToString(List<string> list)
+    public static void Main(string[] args)
     {
-        //Set the default output string
-        string outputString = "";
+        //This only exists to stop VS from giving an error when compiling
+        throw new NotImplementedException("The SeeloewenLib main method does absolutely nothing, stop calling it!");
+    }
+
+    public static string ConvertListToString(List<string> list)
+    {
+        string output = "";
 
         //Add each item in the list as a new line in the string
         foreach (string item in list)
         {
-            outputString = string.Format("{0}{1}\n", outputString, item);
+            output = $"{output}{item}\n";
         }
 
-        //Output the string
-        return outputString;
+        return output;
     }
 
-    public T FindVisualParent<T>(DependencyObject child) where T : DependencyObject
+    public static T FindVisualParent<T>(DependencyObject child) where T : DependencyObject
     {
-        //Takes a child object and returns its visual parent
-        child = VisualTreeHelper.GetParent(child);
-        return child as T;
+        //Get the parent object
+        return VisualTreeHelper.GetParent(child) as T;
     }
 
-    public T FindVisualChild<T>(DependencyObject parent, int index) where T : DependencyObject
+    public static T FindVisualChild<T>(DependencyObject parent, int index) where T : DependencyObject
     {
         //Get the child corresponding to the index and parent
-        var child = VisualTreeHelper.GetChild(parent, index);
-        if (child is T typedChild)
-        {
-            //return the child
-            return typedChild;
-        }
-        return null;
+        DependencyObject child = VisualTreeHelper.GetChild(parent, index);
+
+        return child is T typedChild ? typedChild : null;
     }
 
-    private string ConvertNumberUnit(double number)
+    private static string ConvertNumberUnit(double number)
     {
-        //Define unit
         string unit = "";
 
         if (number > 1000)
         {
-            //If number is one thousand or more
+            //Number is one thousand or more
             unit = "k";
-            number = number / 1000;
+            number /= 1000;
+
             if (number > 1000)
             {
-                //If number is one million or more
+                //Number is one million or more
                 unit = "m";
-                number = number / 1000;
+                number /= 1000;
+
                 if (number > 1000)
                 {
-                    //If number is one billion or more
+                    //Number is one billion or more
                     unit = "b";
-                    number = number / 1000;
+                    number /= 1000;
+
                     if (number > 1000)
                     {
-                        //If number is one trillion ore more
+                        //Number is one trillion ore more
                         unit = "t";
-                        number = number / 1000;
+                        number /= 1000;
                     }
                 }
             }
@@ -90,20 +91,20 @@ public class SeeloewenLibTools
 
 
         //Return the combination of number and unit
-        return string.Format("{0}{1}", number, unit);
+        return $"{number}{unit}";
     }
 }
 
 public class SaveSystem
 {
-    public string path;
-    public string saveFileHeader;
-    public string saveFileName;
     public List<SaveEntry> saveEntries = new List<SaveEntry>();
+
+    public readonly string path;
+    public readonly string saveFileHeader;
+    public readonly string saveFileName;
 
     public SaveSystem(string path, string saveFileHeader, string saveFileName)
     {
-        //Set the path where the settings file will be saved
         this.path = path;
         this.saveFileHeader = saveFileHeader;
         this.saveFileName = saveFileName;
@@ -111,34 +112,35 @@ public class SaveSystem
 
     public void Save()
     {
-        List<string> file = new List<string>();
+        List<string> file =
+        [
+            saveFileHeader,
+        ];
 
-        //Save file header
-        file.Add(saveFileHeader);
-
-        //Save the settings to the file
+        //Save the settings to the file, depending on whether it's a category or entry
         foreach (SaveEntry saveEntry in saveEntries)
         {
-            if (saveEntry.isCategory == true)
+            if (saveEntry.isCategory)
             {
-                file.Add(string.Format("\n#{0}", saveEntry.name));
+                file.Add($"\n#{saveEntry.name}");
             }
             else
             {
-                file.Add(string.Format("{0}={1}", saveEntry.name, saveEntry.content));
+                file.Add($"{saveEntry.name}={saveEntry.content}");
             }
         }
-        File.WriteAllLines(string.Format("{0}/{1}", path, $"{saveFileName}.txt"), file);
+        File.WriteAllLines($"{path}/{saveFileName}.txt", file);
     }
 
     public void Load()
     {
         //Read the settings from the file
-        IEnumerable<string> output = File.ReadLines($"{path}/{saveFileName}.txt");
+        IEnumerable<string> file = File.ReadLines($"{path}/{saveFileName}.txt");
         IEnumerable<string> oldFile;
+
         bool oldFileSaveNeeded = false;
 
-        foreach (string entry in output)
+        foreach (string entry in file)
         {
             string[] entrySplit = entry.Split('=');
 
@@ -151,7 +153,7 @@ public class SaveSystem
                     if (saveEntry.name == entrySplit[0] && !saveEntry.isCategory)
                     {
                         //Check for corruption. If there is none, load the entry from the file
-                        if(!IsCorrupted(saveEntry, entrySplit[1]))
+                        if (!IsCorrupted(saveEntry, entrySplit[1]))
                         {
                             saveEntry.content = entrySplit[1];
                         }
@@ -159,14 +161,16 @@ public class SaveSystem
                         {
                             //If there is corruption, ask the user if they want to correct it
                             MessageBoxResult dialogResult = MessageBox.Show($"The save entry you are trying to load is corrupted and will most likely not work ({saveEntry.name} with content {entrySplit[1]}). Do you want to try to correct it?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
                             if (dialogResult == MessageBoxResult.Yes)
                             {
-                                oldFile = output;
+                                //Correct the corruption
+                                oldFile = file;
                                 oldFileSaveNeeded = true;
                                 saveEntry.content = saveEntry.possibleValues[0];
                                 MessageBox.Show($"The save entry {saveEntry.name} was corrected to {entrySplit[0]}.", "Corrected", MessageBoxButton.OK, MessageBoxImage.Information);
                             }
-                            else if (dialogResult == MessageBoxResult.No)
+                            else
                             {
                                 saveEntry.content = entrySplit[1];
                             }
@@ -177,17 +181,17 @@ public class SaveSystem
         }
 
         //Save the old file and new file if a conversion because of corruption happended
-        if(oldFileSaveNeeded == true)
+        if (oldFileSaveNeeded)
         {
-            File.WriteAllLines(string.Format("{0}/{1}", path, $"{saveFileName}-{DateTime.Now.ToFileTime()}.old"), output);
+            File.WriteAllLines($"{path}/{saveFileName}-{DateTime.Now.ToFileTime()}.old", file);
             Save();
         }
     }
 
     public bool IsCorrupted(SaveEntry EntryTemplate, string entry)
     {
-        //Check if the entry even needs to be checked or can be anything
-        if (EntryTemplate.hasDefinedValues == true)
+        //Check if the entry even needs to be checked
+        if (EntryTemplate.hasDefinedValues)
         {
             //Check if the entry is one of the possible values
             foreach (string possibleValue in EntryTemplate.possibleValues)
@@ -213,16 +217,17 @@ public class SaveSystem
         {
             if (entry.name == name)
             {
-                if (entry.isCategory == false)
+                if (entry.isCategory)
                 {
-                    entry.content = content;
+                    throw new Exception("Cannot set content for a SaveSystem category");
                 }
-                else
-                {
-                    MessageBox.Show("SeeloewenLib Error: You're trying to set the content of a category, which is not possible.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+
+                entry.content = content;
+                return;
             }
         }
+
+        throw new Exception($"Cannot set content for entry {name} as it doesn't exist");
     }
 
     public string GetEntry(string name)
@@ -232,36 +237,32 @@ public class SaveSystem
         {
             if (entry.name == name)
             {
-                if (entry.isCategory == false)
+                if (entry.isCategory)
                 {
-                    return entry.content;
+                    throw new Exception("Cannot get content for a SaveSystem category");
                 }
-                else
-                {
-                    MessageBox.Show("SeeloewenLib Error: You're trying to get the content of a category, which is not possible.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return "";
-                }
+
+                return entry.content;
             }
         }
 
-        return "";
+        throw new Exception($"Cannot get content for entry {name} as it doesn't exist");
     }
 }
 
 public class SaveEntry
 {
-    public string name;
+    public readonly string name;
     public string content;
-    public bool isCategory;
-    public bool hasDefinedValues; //If this is false, a corruption check will be skipped
+    public readonly bool isCategory;
+    public readonly bool hasDefinedValues; //If this is false, a corruption check will be skipped
     public string[] possibleValues;
     private int index;
 
     public SaveEntry(string name, string defaultContent, bool isCategory, bool hasDefinedValues, string[] possibleValues, int index)
     {
-        //Map all variables
         this.name = name;
-        this.content = defaultContent;
+        content = defaultContent;
         this.isCategory = isCategory;
         this.hasDefinedValues = hasDefinedValues;
         this.possibleValues = possibleValues;
@@ -271,52 +272,45 @@ public class SaveEntry
 
 public class Wizard
 {
-    //Attributes
     public List<WizardPage> pages = new List<WizardPage>();
     public GroupBox gbWizard;
     public Button btnContinue;
     public Button btnBack;
-    public int currentPage = 1;
-    public int pagesAmount = 0;
-    public Action codeCancel = null;
-    public Action codeFinish = null;
 
-    //-- Constructor --//
+    public int currentPage = 1;
+    public readonly int pagesAmount = 0;
+
+    public Action codeCancel;
+    public Action codeFinish;
 
     public Wizard(int pagesAmount, int height, int width, Button btnContinue, Button btnBack, Action codeCancel, Action codeFinish, Thickness margin)
     {
-        //Create references
         this.btnContinue = btnContinue;
         this.btnBack = btnBack;
         this.pagesAmount = pagesAmount;
         this.codeCancel = codeCancel;
         this.codeFinish = codeFinish;
 
-        //Create Wizard GroupBox
-        gbWizard = new GroupBox();
+        //Setup controls
         gbWizard.Width = width;
         gbWizard.Height = height;
         gbWizard.Margin = margin;
-
-        //Setup buttons
         this.btnContinue.Click += new RoutedEventHandler(btnContinue_Click);
         this.btnBack.Click += new RoutedEventHandler(btnBack_Click);
 
         //Create pages based on amount
         for (int i = 0; i < pagesAmount; i++)
         {
-            pages.Add(new WizardPage(i + 1, string.Format("Step {0}", i + 1), defaultRequirement, true, true, "Cannot continue to the next page because the requirements are not fulfilled."));
+            pages.Add(new WizardPage(i + 1, $"Step {i + 1}", defaultRequirement, true, true, "Cannot continue to the next page because the requirements are not fulfilled."));
         }
 
         //Show first page
         ShowPage(1);
     }
 
-    //-- Custom Methods --//
-
     public void ShowPage(int pageNum)
     {
-        if (pages[pageNum - 1].requirements() == true)
+        if (pages[pageNum - 1].requirements())
         {
             //Set button text based on page number
             if (pageNum > 1 && pageNum < pagesAmount)
@@ -336,7 +330,7 @@ public class Wizard
             }
 
             //Set button state based on page settings
-            if (pages[pageNum - 1].canGoBack == true)
+            if (pages[pageNum - 1].canGoBack)
             {
                 btnBack.IsEnabled = true;
             }
@@ -344,7 +338,8 @@ public class Wizard
             {
                 btnBack.IsEnabled = false;
             }
-            if (pages[pageNum - 1].canContinue == true)
+
+            if (pages[pageNum - 1].canContinue)
             {
                 btnContinue.IsEnabled = true;
             }
@@ -361,6 +356,10 @@ public class Wizard
                 gbWizard.Content = pages[pageNum - 1].grdContent;
                 gbWizard.Header = pages[pageNum - 1].header;
                 pages[pageNum - 1].ExecuteCode();
+            }
+            else
+            {
+                throw new IndexOutOfRangeException("WizardPage number was out of range");
             }
         }
         else
@@ -398,24 +397,11 @@ public class Wizard
         }
     }
 
-    public bool defaultRequirement()
-    {
-        //Default requirement used by the pages, always returns true
-        return true;
-    }
+    public bool defaultRequirement() => true; //Default requirement used by the pages, always returns true
 
-    //-- Event Handlers --//
-    private void btnContinue_Click(object sender, RoutedEventArgs e)
-    {
-        //Show the next page
-        ShowNextPage();
-    }
+    private void btnContinue_Click(object sender, RoutedEventArgs e) => ShowNextPage();
 
-    private void btnBack_Click(object sender, RoutedEventArgs e)
-    {
-        //Show the previous page
-        ShowPreviousPage();
-    }
+    private void btnBack_Click(object sender, RoutedEventArgs e) => ShowPreviousPage();
 }
 
 public class WizardPage
@@ -423,11 +409,12 @@ public class WizardPage
     //Attributes
     public Grid grdContent;
     public Action code = null;
-    public string header;
-    public int pageNum;
     public Func<bool> requirements;
-    public bool canGoBack;
-    public bool canContinue;
+
+    public string header;
+    private int pageNum;
+    public readonly bool canGoBack;
+    public readonly bool canContinue;
     public string requirementsNotFulfilledMsg;
 
     //-- Constructor --//
