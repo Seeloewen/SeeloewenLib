@@ -1,6 +1,6 @@
 # SeeloewenLib
 SeeloewenLib is a simple C# library with useful code mainly used in software by Seeloewen.
-You're free to use this library in your own code if it's useful for you. Make sure to acknowledge the license the library lies under, which can be found here: https://www.gnu.org/licenses/gpl-3.0.en.html
+You're free to use this library in your own code if it's useful for you. Make sure to acknowledge the license the library lies under, which can be found here: https://www.gnu.org/licenses/gpl-3.0.en.html.
 Please note that most of this code only works in WPF.
 
 ## Content
@@ -12,7 +12,7 @@ You can find more detailed explanations in the library's code itself.
 The SeeloewenLibTools class contains a bunch of useful methods like ConvertListToString, FindVisualParent, FindVisualChild, ConvertNumberUnit and much more, which all do what the name says.
 
 ### SaveSystem
-The SaveSystem class together with the SaveEntry class provide a solid base for a working save system, where you can save strings in a file to your disk. You are able to create a save system with the following parameters, allowing for customization: *string name, string content, bool isCategory, bool hasDefinedValues, string[] possibleValues, int index*. When starting your app, you will need to create a saveEntry for each of your settings. During runtime, you can then use Get and Set methods to access the saveEntries. A simple Save() and Load() method can save and load the saveEntries to your drive. When loading/saving a save entry, it will also get checked for corruption and can be corrected.
+The SaveSystem class together with the SaveEntry class provide a solid base for a working save system, where you can save strings in a file to your disk. You are able to create a save system with save entries that have the following parameters, allowing for customization: *string name, string content, bool isCategory, bool hasDefinedValues, string[] possibleValues, int index*. When starting your app, you will need to create a saveEntry for each of your settings. During runtime, you can then use Get and Set methods to access the saveEntries. A simple Save() and Load() method can save and load the saveEntries to your drive. When loading/saving a save entry, it will also get checked for corruption and can be corrected.
 
 ### Wizard
 The Wizard class can be used to create simple wizards in your software. It creates a groupbox and a specified amount of pages, which contains Grids that are added to the groupbox. There are predefined methods for changing the page and you can customize it by changing the content, header, page requirements and even the code that gets executed when a page is shown.
