@@ -19,6 +19,7 @@ using System.Windows.Controls;
 using System;
 using System.Windows.Media;
 using System.IO;
+using System.Windows.Threading;
 
 namespace SeeloewenLib;
 
@@ -26,7 +27,7 @@ public static class Tools
 {
     public static void Main(string[] args)
     {
-        //This only exists to stop VS from giving an error when compiling
+        //This only exists to stop VS from giving an error when compiling - Needs to be removed before using it in your code
         throw new NotImplementedException("The SeeloewenLib main method does absolutely nothing, stop calling it!");
     }
 
@@ -36,21 +37,38 @@ public static class Tools
         DependencyObject parent = VisualTreeHelper.GetParent(element);
 
         //Check the possible variations
-        Panel parentAsPanel = parent as Panel;
-        if (parentAsPanel != null)
+        if (parent != null)
         {
-            parentAsPanel.Children.Remove(element);
+            Panel parentAsPanel = parent as Panel;
+            if (parentAsPanel != null)
+            {
+                parentAsPanel.Children.Remove(element);
+            }
+            ContentControl parentAsContentControl = parent as ContentControl;
+            if (parentAsContentControl != null)
+            {
+                parentAsContentControl.Content = null;
+            }
+            Decorator parentAsDecorator = parent as Decorator;
+            if (parentAsDecorator != null)
+            {
+                parentAsDecorator.Child = null;
+            }
         }
-        ContentControl parentAsContentControl = parent as ContentControl;
-        if (parentAsContentControl != null)
-        {
-            parentAsContentControl.Content = null;
-        }
-        Decorator parentAsDecorator = parent as Decorator;
-        if (parentAsDecorator != null)
-        {
-            parentAsDecorator.Child = null;
-        }
+    }
+
+    public static void Delay(int seconds, Action function)
+    {
+        DispatcherTimer delayTimer = new DispatcherTimer();
+
+        delayTimer.Interval = new TimeSpan(0, 0, seconds);
+        delayTimer.Tick += (object sender, EventArgs args) 
+            => { 
+                function.Invoke(); 
+                delayTimer.Stop(); 
+               };
+
+        delayTimer.Start();
     }
 
     public static string ConvertListToString(List<string> list)
