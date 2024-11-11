@@ -23,14 +23,23 @@ using System.Windows.Threading;
 
 namespace SeeloewenLib;
 
+/// <summary>
+/// Contains several useful tools that can be used on their own
+/// </summary>
 public static class Tools
 {
+    /// <summary>
+    /// Only here to avoid compilation error in the SeeloewenLib project. Remove before using in your code!
+    /// </summary>
     public static void Main(string[] args)
     {
         //This only exists to stop VS from giving an error when compiling - Needs to be removed before using it in your code
         throw new NotImplementedException("The SeeloewenLib main method does absolutely nothing, stop calling it!");
     }
 
+    /// <summary>
+    /// Gets the parent of the specified element and (depending on the control) sets its content to null
+    /// </summary>
     public static void RemoveFromParent(UIElement element) //Possibly incomplete
     {
         //Get the parent of the specified UI element and remove the element from its parent
@@ -47,7 +56,7 @@ public static class Tools
             ContentControl parentAsContentControl = parent as ContentControl;
             if (parentAsContentControl != null)
             {
-                parentAsContentControl.Content = null;
+                parentAsContentControl.Content = null; //Warning when using this: might also remove other content
             }
             Decorator parentAsDecorator = parent as Decorator;
             if (parentAsDecorator != null)
@@ -57,6 +66,9 @@ public static class Tools
         }
     }
 
+    /// <summary>
+    /// Starts a timer that ticks once after the specified amount of seconds. The action will be invoked when the timer is done.
+    /// </summary>
     public static void Delay(int seconds, Action function)
     {
         DispatcherTimer delayTimer = new DispatcherTimer();
@@ -71,6 +83,9 @@ public static class Tools
         delayTimer.Start();
     }
 
+    /// <summary>
+    /// Takes a list and returns a string that contains all the items, seperated by line-breaks
+    /// </summary>
     public static string ConvertListToString(List<string> list)
     {
         string output = "";
@@ -84,12 +99,18 @@ public static class Tools
         return output;
     }
 
+    /// <summary>
+    /// Gets the visual parent of an object, if possible
+    /// </summary>
     public static T FindVisualParent<T>(DependencyObject child) where T : DependencyObject
     {
         //Get the parent object
         return VisualTreeHelper.GetParent(child) as T;
     }
 
+    /// <summary>
+    /// Gets the visual child of an object, if possible
+    /// </summary>
     public static T FindVisualChild<T>(DependencyObject parent, int index) where T : DependencyObject
     {
         //Get the child corresponding to the index and parent
@@ -98,6 +119,9 @@ public static class Tools
         return child is T typedChild ? typedChild : null;
     }
 
+    /// <summary>
+    /// Converts a number into bigger units as long as possible and adds the unit
+    /// </summary>
     private static string ConvertNumberUnit(double number)
     {
         string unit = "";
@@ -136,6 +160,10 @@ public static class Tools
     }
 }
 
+/// <summary>
+/// Simple Save System that saves settings as text files and reads them into variables.
+/// [!] Should only be used when absolutely necessary, no longer receives major updates.
+/// </summary>
 public class SaveSystem
 {
     public List<SaveEntry> saveEntries = new List<SaveEntry>();
@@ -144,6 +172,9 @@ public class SaveSystem
     public readonly string saveFileHeader;
     public readonly string saveFileName;
 
+    /// <summary>
+    /// Creates an instance of a Save System. Make sure to create your SaveEntries afterwards.
+    /// </summary>
     public SaveSystem(string path, string saveFileHeader, string saveFileName)
     {
         this.path = path;
@@ -151,6 +182,9 @@ public class SaveSystem
         this.saveFileName = saveFileName;
     }
 
+    /// <summary>
+    /// Saves the settings entries to the path specified in the constructor
+    /// </summary>
     public void Save()
     {
         List<string> file =
@@ -173,6 +207,9 @@ public class SaveSystem
         File.WriteAllLines($"{path}/{saveFileName}.txt", file);
     }
 
+    /// <summary>
+    /// Loads the settings from the path specified in the constructor into save entries
+    /// </summary>
     public void Load()
     {
         //Read the settings from the file
@@ -229,6 +266,9 @@ public class SaveSystem
         }
     }
 
+    /// <summary>
+    /// Checks if an entry is corrupted by comparing it to a list of expected values (if needed)
+    /// </summary>
     public bool IsCorrupted(SaveEntry EntryTemplate, string entry)
     {
         //Check if the entry even needs to be checked
@@ -251,6 +291,9 @@ public class SaveSystem
         }
     }
 
+    /// <summary>
+    /// Sets the value of an entry to the specified content
+    /// </summary>
     public void SetEntry(string name, string content)
     {
         //Sets the given entry to the given content
@@ -271,6 +314,9 @@ public class SaveSystem
         throw new Exception($"Cannot set content for entry {name} as it doesn't exist");
     }
 
+    /// <summary>
+    /// Gets the value of the specified entry
+    /// </summary>
     public string GetEntry(string name)
     {
         //Gets the content of the given entry
@@ -291,6 +337,9 @@ public class SaveSystem
     }
 }
 
+/// <summary>
+/// Save Entry that goes along with the Save System
+/// </summary>
 public class SaveEntry
 {
     public readonly string name;
@@ -300,6 +349,9 @@ public class SaveEntry
     public string[] possibleValues;
     private int index;
 
+    /// <summary>
+    /// Creates an instance of a Save Entry
+    /// </summary>
     public SaveEntry(string name, string defaultContent, bool isCategory, bool hasDefinedValues, string[] possibleValues, int index)
     {
         this.name = name;
@@ -311,6 +363,9 @@ public class SaveEntry
     }
 }
 
+/// <summary>
+/// Wizard that manages multiple pages that contain content, with the ability to navigate between them
+/// </summary>
 public class Wizard
 {
     public List<WizardPage> pages = new List<WizardPage>();
@@ -324,6 +379,9 @@ public class Wizard
     public Action codeCancel;
     public Action codeFinish;
 
+    /// <summary>
+    /// Creates an instance of a Wizard
+    /// </summary>
     public Wizard(int pagesAmount, int height, int width, Button btnContinue, Button btnBack, Action codeCancel, Action codeFinish, Thickness margin)
     {
         this.btnContinue = btnContinue;
@@ -349,6 +407,9 @@ public class Wizard
         ShowPage(1);
     }
 
+    /// <summary>
+    /// Shows the specified page
+    /// </summary>
     public void ShowPage(int pageNum)
     {
         if (pages[pageNum - 1].requirements())
@@ -410,6 +471,9 @@ public class Wizard
         }
     }
 
+    /// <summary>
+    /// Show the next page or invoke the finish code, if there is no next page
+    /// </summary>
     public void ShowNextPage()
     {
         if (currentPage < pagesAmount)
@@ -424,6 +488,9 @@ public class Wizard
         }
     }
 
+    /// <summary>
+    /// Show the previous page or invoke the cancel code, if there is no previous page
+    /// </summary>
     public void ShowPreviousPage()
     {
         if (currentPage > 1)
@@ -438,13 +505,25 @@ public class Wizard
         }
     }
 
+    /// <summary>
+    /// Requirement that the pages use by default, always returns true
+    /// </summary>
     public bool defaultRequirement() => true; //Default requirement used by the pages, always returns true
 
+    /// <summary>
+    /// Click handler for the continue button, invokes "ShowNextPage()"
+    /// </summary>
     private void btnContinue_Click(object sender, RoutedEventArgs e) => ShowNextPage();
 
+    /// <summary>
+    /// Click handler for the back button, invokes "ShowPreviousPage()"
+    /// </summary>
     private void btnBack_Click(object sender, RoutedEventArgs e) => ShowPreviousPage();
 }
 
+/// <summary>
+/// Wizard Page that goes along with the Wizard
+/// </summary>
 public class WizardPage
 {
     //Attributes
@@ -458,8 +537,9 @@ public class WizardPage
     public readonly bool canContinue;
     public string requirementsNotFulfilledMsg;
 
-    //-- Constructor --//
-
+    /// <summary>
+    /// Creates an instance of a Wizard Page
+    /// </summary>
     public WizardPage(int pageNum, string header, Func<bool> requirements, bool canGoBack, bool canContinue, string requirementsNotFulfilledMsg)
     {
         //Create references
@@ -474,8 +554,9 @@ public class WizardPage
         grdContent = new Grid();
     }
 
-    //-- Custom Methods --//
-
+    /// <summary>
+    /// Invokes the code that was previously specified in the constructor of the page
+    /// </summary>
     public void ExecuteCode()
     {
         //Run the code that is assigned to this page
