@@ -1,7 +1,7 @@
 ﻿/////////////////////////////////////////////////////////////////////
 //                                                                 //
-// SealLib v1.1.0                                                  //
-// Wednesday, 27th March 2024                                      //
+// SeeloewenLib v1.2.0                                             //
+// Tuesday, 12th November 2024                                     //
 // Created by Seeloewen                                            //
 //                                                                 //
 // Simple library that contains some code that is used by my apps. //

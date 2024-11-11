@@ -8,8 +8,8 @@ Down below is a quick overview of all the main components that this library has 
 You can find more detailed explanations in the library's code itself.
 
 
-### SeeloewenLibTools
-The SeeloewenLibTools class contains a bunch of useful methods like ConvertListToString, FindVisualParent, FindVisualChild, ConvertNumberUnit and much more, which all do what the name says.
+### Tools
+The Tools class contains a bunch of useful methods like ConvertListToString, FindVisualParent, FindVisualChild, ConvertNumberUnit and much more, which all do what the name says.
 
 ### SaveSystem
 The SaveSystem class together with the SaveEntry class provide a solid base for a working save system, where you can save strings in a file to your disk. You are able to create a save system with save entries that have the following parameters, allowing for customization: *string name, string content, bool isCategory, bool hasDefinedValues, string[] possibleValues, int index*. When starting your app, you will need to create a saveEntry for each of your settings. During runtime, you can then use Get and Set methods to access the saveEntries. A simple Save() and Load() method can save and load the saveEntries to your drive. When loading/saving a save entry, it will also get checked for corruption and can be corrected.
@@ -17,7 +17,7 @@ The SaveSystem class together with the SaveEntry class provide a solid base for 
 ### Wizard
 The Wizard class can be used to create simple wizards in your software. It creates a groupbox and a specified amount of pages, which contains Grids that are added to the groupbox. There are predefined methods for changing the page and you can customize it by changing the content, header, page requirements and even the code that gets executed when a page is shown.
 
-Below is an example for a wizard taken out of the Random Item Giver Updater, used in a duplicate finder window.
+Below is an example for a wizard taken out of the Random Item Giver Updater, used in a Duplicate Finder window.
 
             //Create the wizard
             wzdDuplicateFinder = new Wizard(2, 580, 742, btnContinue, btnBack, Close, Close, new Thickness(0, 0, 0, 0)); //Creates the wizard with 2 pages at coordinates x580 and y742 as well as mapping the buttons and setting the options on first and final page
