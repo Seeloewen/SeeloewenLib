@@ -30,6 +30,29 @@ public static class Tools
         throw new NotImplementedException("The SeeloewenLib main method does absolutely nothing, stop calling it!");
     }
 
+    public static void RemoveFromParent(UIElement element) //Possibly incomplete
+    {
+        //Get the parent of the specified UI element and remove the element from its parent
+        DependencyObject parent = VisualTreeHelper.GetParent(element);
+
+        //Check the possible variations
+        Panel parentAsPanel = parent as Panel;
+        if (parentAsPanel != null)
+        {
+            parentAsPanel.Children.Remove(element);
+        }
+        ContentControl parentAsContentControl = parent as ContentControl;
+        if (parentAsContentControl != null)
+        {
+            parentAsContentControl.Content = null;
+        }
+        Decorator parentAsDecorator = parent as Decorator;
+        if (parentAsDecorator != null)
+        {
+            parentAsDecorator.Child = null;
+        }
+    }
+
     public static string ConvertListToString(List<string> list)
     {
         string output = "";
