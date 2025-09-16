@@ -117,7 +117,7 @@ public static class Tools
     /// <summary>
     /// Converts a number into bigger units as long as possible and adds the unit
     /// </summary>
-    private static string ConvertNumberUnit(double number)
+    public static string ConvertNumberUnit(double number)
     {
         string unit = "";
 
