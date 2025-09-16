@@ -38,31 +38,26 @@ public static class Tools
     }
 
     /// <summary>
-    /// Gets the parent of the specified element and (depending on the control) sets its content to null
+    /// Gets the parent of the specified element and (depending on the control) removes the element from it
     /// </summary>
-    public static void RemoveFromParent(UIElement element) //Possibly incomplete
+    public static void RemoveFromParent(UIElement element) //Missing some minor edge cases
     {
-        //Get the parent of the specified UI element and remove the element from its parent
-        DependencyObject parent = VisualTreeHelper.GetParent(element);
+        var parent = LogicalTreeHelper.GetParent(element); //Using Logical parent instead of visual one makes more sense here, especially when considering stuff like ListBoxes
 
         //Check the possible variations
         if (parent != null)
         {
             Panel parentAsPanel = parent as Panel;
-            if (parentAsPanel != null)
-            {
-                parentAsPanel.Children.Remove(element);
-            }
+            if (parentAsPanel != null) parentAsPanel.Children.Remove(element);
+
             ContentControl parentAsContentControl = parent as ContentControl;
-            if (parentAsContentControl != null)
-            {
-                parentAsContentControl.Content = null; //Warning when using this: might also remove other content
-            }
+            if (parentAsContentControl != null) parentAsContentControl.Content = null; //Warning when using this: might also remove other content
+
             Decorator parentAsDecorator = parent as Decorator;
-            if (parentAsDecorator != null)
-            {
-                parentAsDecorator.Child = null;
-            }
+            if (parentAsDecorator != null) parentAsDecorator.Child = null;
+
+            ItemsControl parentItmControl = parent as ItemsControl;
+            if (parentItmControl != null) parentItmControl.Items.Remove(element);
         }
     }
 
