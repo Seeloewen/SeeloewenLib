@@ -160,6 +160,8 @@ public static class Tools
 /// Simple Save System that saves settings as text files and reads them into variables.
 /// [!] Should only be used when absolutely necessary, no longer receives major updates.
 /// </summary>
+
+[Obsolete("This system is outdated and no longer receives updates. It is recommended to use a different approach.")]
 public class SaveSystem
 {
     public List<SaveEntry> saveEntries = new List<SaveEntry>();
@@ -336,6 +338,8 @@ public class SaveSystem
 /// <summary>
 /// Save Entry that goes along with the Save System
 /// </summary>
+
+[Obsolete("This system is outdated and no longer receives updates. It is recommended to use a different approach.")]
 public class SaveEntry
 {
     public readonly string name;
@@ -362,6 +366,8 @@ public class SaveEntry
 /// <summary>
 /// Wizard that manages multiple pages that contain content, with the ability to navigate between them
 /// </summary>
+
+[Obsolete("This system is outdated and no longer receives updates. It is recommended to use a different approach.")]
 public class Wizard
 {
     private List<WizardPage> pages = new List<WizardPage>();
@@ -547,6 +553,8 @@ public class Wizard
 /// <summary>
 /// Wizard Page that goes along with the Wizard
 /// </summary>
+
+[Obsolete("This system is outdated and no longer receives updates. It is recommended to use a different approach.")]
 public class WizardPage
 {
     //Attributes
