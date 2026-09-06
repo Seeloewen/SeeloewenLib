@@ -1,7 +1,7 @@
 ﻿/////////////////////////////////////////////////////////////////////
 //                                                                 //
-// SeeloewenLib v1.2.0                                             //
-// Tuesday, 12th November 2024                                     //
+// SeeloewenLib v1.2.1                                             //
+// Sunday, 6th September 2026                                      //
 // Created by Seeloewen                                            //
 //                                                                 //
 // Simple library that contains some code that is used by my apps. //
@@ -612,7 +612,7 @@ public class WizardPage
 ////////////////////////////////////////////////////////////////////////////
 //                                                                        //
 // SeeloewenLib - A simple but powerful C# WPF library                    //
-// Copyright(C) 2024 Louis/Seeloewen                                      //
+// Copyright(C) 2026 Louis/Seeloewen                                      //
 //                                                                        //
 // This program is free software: you can redistribute it and/or modify   //
 // it under the terms of the GNU General Public License as published by   //
