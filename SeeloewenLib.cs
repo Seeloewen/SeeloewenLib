@@ -69,11 +69,12 @@ public static class Tools
         DispatcherTimer delayTimer = new DispatcherTimer();
 
         delayTimer.Interval = new TimeSpan(0, 0, seconds);
-        delayTimer.Tick += (object sender, EventArgs args) 
-            => { 
-                function.Invoke(); 
-                delayTimer.Stop(); 
-               };
+        delayTimer.Tick += (object sender, EventArgs args)
+            =>
+        {
+            function.Invoke();
+            delayTimer.Stop();
+        };
 
         delayTimer.Start();
     }
@@ -363,7 +364,7 @@ public class SaveEntry
 /// </summary>
 public class Wizard
 {
-    public List<WizardPage> pages = new List<WizardPage>();
+    private List<WizardPage> pages = new List<WizardPage>();
     public GroupBox gbWizard;
     public Button btnContinue;
     public Button btnBack;
@@ -498,6 +499,14 @@ public class Wizard
             //Invoke code, that gets run when user tries to go to the previous page even though it was the first page
             codeCancel?.Invoke();
         }
+    }
+
+    /// <summary>
+    /// Show the specified page. Note that this is NOT zero indexed and starts with page 1
+    /// </summary>
+    public WizardPage GetPage(int number)
+    {
+        return pages[number - 1];
     }
 
     /// <summary>
