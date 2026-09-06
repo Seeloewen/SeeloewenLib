@@ -1,6 +1,13 @@
 # Changelog
 This file lists all the changes that were made to the library over the past versions.
 
+### Version 1.2.1 - 6th September 2026
+* SaveSystem and Wizard are now officially deprecated
+* Added optional warning message when clicking on back/continue to wizard
+* Made wizard pages accessible by method instead of direct array access
+* Improved Tools#RemoveFromParent
+* Fixed Tools#ConvertNumberUnit being private
+
 ### Version 1.2.0 - 12th November 2024
 * Upgraded to .NET 8
 * Added 'Summary' comments
