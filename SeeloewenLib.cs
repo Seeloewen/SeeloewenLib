@@ -369,6 +369,7 @@ public class Wizard
     public Button btnContinue;
     public Button btnBack;
 
+    //Starts with 1
     public int currentPage = 1;
     public readonly int pagesAmount = 0;
 
@@ -472,6 +473,15 @@ public class Wizard
     /// </summary>
     public void ShowNextPage()
     {
+        WizardPage page = GetPage(currentPage);
+        if (!string.IsNullOrEmpty(page.continueWarning))
+        {
+            if (MessageBox.Show(page.continueWarning, "Warning", MessageBoxButton.YesNo, MessageBoxImage.Exclamation) == MessageBoxResult.No)
+            {
+                return;
+            }
+        }
+
         if (currentPage < pagesAmount)
         {
             //Shows the next page in the wizard
@@ -489,6 +499,15 @@ public class Wizard
     /// </summary>
     public void ShowPreviousPage()
     {
+        WizardPage page = GetPage(currentPage);
+        if (!string.IsNullOrEmpty(page.backWarning))
+        {
+            if (MessageBox.Show(page.backWarning, "Warning", MessageBoxButton.YesNo, MessageBoxImage.Exclamation) == MessageBoxResult.No)
+            {
+                return;
+            }
+        }
+
         if (currentPage > 1)
         {
             //Show the previous page in the wizard
@@ -539,12 +558,24 @@ public class WizardPage
     private int pageNum;
     public readonly bool canGoBack;
     public readonly bool canContinue;
+
+    public readonly string backWarning;
+    public readonly string continueWarning;
+
     public string requirementsNotFulfilledMsg;
 
     /// <summary>
     /// Creates an instance of a Wizard Page
     /// </summary>
-    public WizardPage(int pageNum, string header, Func<bool> requirements, bool canGoBack, bool canContinue, string requirementsNotFulfilledMsg)
+    public WizardPage(
+        int pageNum,
+        string header,
+        Func<bool> requirements,
+        bool canGoBack,
+        bool canContinue,
+        string requirementsNotFulfilledMsg,
+        string backWarning = "",
+        string continueWarning = "")
     {
         //Create references
         this.pageNum = pageNum;
@@ -552,7 +583,9 @@ public class WizardPage
         this.requirements = requirements;
         this.canGoBack = canGoBack;
         this.canContinue = canContinue;
-        this.requirementsNotFulfilledMsg = requirementsNotFulfilledMsg;
+        this.requirementsNotFulfilledMsg = requirementsNotFulfilledMsg; ;
+        this.backWarning = backWarning;
+        this.continueWarning = continueWarning;
 
         //Create the grid that contains the page content. You can add whatever you want to that grid, it's up to you what the page contains
         grdContent = new Grid();
